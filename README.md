@@ -2,7 +2,7 @@
 ## About
 This project focuses on detecting and tracking two Beyblades in a battle using YOLOv8 Nano. The goal is to determine which Beyblade stops first, marking it as the loser. The system tracks both Beyblades, analyzes their movements, and displays results in real time.
 ## Datasets
-The datasets sourced from [Super Beyblade Family's Youtube video](https://www.youtube.com/watch?v=CIfr5618vy4&t=224s) and extracted by manual labelling from [Roboflow Universe](https://universe.roboflow.com/personalihsanworkspace/beyblade-battle-piifc/dataset/2). The datasets is divided into 1080 'train' images (92%) and 90 'valid' images (8%). It has applied preprocessing steps, including Auto-Orient, Resize Stretch to 640x640, an output of 3 training examples, and noise up to 1.21% of pixels to o improve the model’s robustness. The class labels consist of three categories: '0' for beyblade, '1' for hand, and '2' for beyblade launcher
+The datasets sourced from [Super Beyblade Family's Youtube video](https://www.youtube.com/watch?v=CIfr5618vy4&t=224s) and extracted by manual labelling from [Roboflow Universe](https://universe.roboflow.com/personalihsanworkspace/beyblade-battle-piifc/dataset/2). The datasets is divided into 1080 'train' images (92%) and 90 'valid' images (8%). It has applied preprocessing steps, including Auto-Orient, Resize Stretch to 640x640, an output of 3 training examples, and noise up to 1.21% of pixels to o improve the model’s robustness. The class labels consist of three categories: '0' for beyblade, '1' for hand, and '2' for beyblade launcher in object detection roboflow project.
 
 ![Beyblade Datasets](./image/datasets-beyblade.png)
 ![Not Beyblade Datasets](./image/datasets-nobeyblade.png)
@@ -133,3 +133,7 @@ The program also provide the creating data storage of CSV and .db. There are 2 t
 2. beyblade_battle_result.csv
    In this dataframe, only 1 record will be conceived. It will stored after the winning condition is occured. The field of this dataframe are 4 fields; 'Beyblade ID that win', 'Beyblade ID that lose', 'Duration battle', 'Collision count'.
    After both of dataframes is created, the program will create database (.db) using SQLite scripts with filenames 'beybladebattletracking.db'.
+
+## Handling Problems
+Since the model achieved a precision below 0.90 for class '0' (Beyblades), there are instances where beyblade detection may temporarily disappear. To address this issue, I developed an algorithm that stores the last known position of a beyblade in track_history whenever the detection is temporarily lost (due to occlusions or false positives).
+Additionally, I implemented a logic to handle cases where only one beyblade is detected after the other has faded away. Once the missing beyblade is detected again, it will be assigned to its previous ID. For example, if **only beyblade2 is visible** in the frame, **the next newly detected beyblade** will be assigned to **beyblade1**, also applies to reverse condition.
