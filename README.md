@@ -34,7 +34,7 @@ git clone https://github.com/ihsanabdulhakim/beyblade-battle-tracking.git
 ```
 2. Install the required dependencies:
 ```
-pip install -r -requirements.txt
+pip install -r requirements.txt
 ```
   The python program requires the following libraries:
   * ultralytics
