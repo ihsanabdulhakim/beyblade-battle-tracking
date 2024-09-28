@@ -25,12 +25,14 @@ transform = transforms.Compose([
 # Threshold for losing parameters
 threshold_diff = 1.00           # Below this value is the boundaries for closest distance (assumption for object not moving at all)
 mean_threshold = 0.20           # Below this value is the boundaries for similarity image (assumption for not changing looks for few frames)
+threshold_arena = 0.03          # This value is the boundaries for area overlap (for collision detection)
 
 # Initializing variables for the beyblade
 beyblade1_id = beyblade2_id = None
 beyblade1_array_before = beyblade2_array_before = None
 beyblade1_pos = beyblade2_pos = None
 beyblade1_pos_before = beyblade2_pos_before = None
+beyblade1_bbox = beyblade2_bbox = None
 beyblade1_conf = beyblade2_conf =None
 beyblade1_cropped = beyblade2_cropped = None
 beyblade1_win_count = beyblade2_win_count = 0
@@ -40,6 +42,7 @@ beyblade_detected_count = 0  # Counter for detected Beyblades
 frame_counter = 0
 frame_battle_counter = 0
 previous_timestamp = None  # To store the previous timestamp
+collision_count = 0 # Initialized for collision
 winning1_enabled = winning2_enabled = False  # Statement to triggering winning condition
 
 # Object ID tracker
@@ -54,11 +57,11 @@ next_custom_id = 1  # Start custom IDs from 1
 df1_columns = [
     'Beyblade1_x', 'Beyblade1_y', 'Beyblade1_pos_diff', 'Beyblade1_array_diff', 'Beyblade1_conf', 
     'Beyblade2_x', 'Beyblade2_y', 'Beyblade2_pos_diff', 'Beyblade2_array_diff', 'Beyblade2_conf', 
-    'Timeframe', 'Timestamp']
+    'Timeframe', 'Timestamp', 'Status_collision', 'Count_collision']
 df1 = pd.DataFrame(columns=df1_columns)
 
 # Create table (CSV) for battle results
-df2_columns = ['Beyblade Win','Beyblade Lose','Duration']
+df2_columns = ['Beyblade_Win','Beyblade_Lose','Duration','Total_Collision']
 df2 = pd.DataFrame(columns=df2_columns)
 
 
@@ -72,17 +75,18 @@ def center(x1,x2):
     return centerresult
 
 # Function to store object (beyblade) features
-def beyblade_array(frame,x1,x2,y1,y2,conf):
+def beyblade_array_info(frame,x1,x2,y1,y2,conf):
     center_x = center(x1,x2)
     center_y = center(y1,y2)
     beyblade_pos = (center_x, center_y)
+    beyblade_bbox = [x1,y1,x2,y2]
     beyblade_conf = conf
     beyblade_cropped = frame[y1:y2, x1:x2]
     beyblade_convert = Image.fromarray(beyblade_cropped)  # Convert NumPy array to PIL image
     beyblade_array_this_fps = transform(beyblade_convert)
     beyblade_array_this_fps = beyblade_array_this_fps * 255.0
     beyblade_array_this_fps = beyblade_array_this_fps.type(torch.uint8)
-    return beyblade_cropped, beyblade_array_this_fps, beyblade_pos, beyblade_conf
+    return beyblade_cropped, beyblade_array_this_fps, beyblade_pos, beyblade_conf, beyblade_bbox
 
 # Function to count duration
 def timecounting(frame_counter,fps,text):
@@ -125,6 +129,22 @@ def get_color_for_id(custom_track_id):
         2: (255, 0, 0),    # Red for beyblade 2
     }
     return color_map.get(custom_track_id, (0, 255, 0))  
+
+# Function to counting collision occur
+def calculate_collision(beyblade1_bbox, beyblade2_bbox,threshold_arena):
+    x1_a, y1_a, x2_a, y2_a = beyblade1_bbox
+    x1_b, y1_b, x2_b, y2_b = beyblade2_bbox    
+
+    overlap_x_point = np.maximum(0, np.minimum(x2_a, x2_b) - np.maximum(x1_a,x1_b))
+    overlap_y_point = np.maximum(0, np.minimum(y2_a, y2_b) - np.maximum(y1_a,y1_b)) 
+    overlap_area = overlap_x_point*overlap_y_point
+
+    area_a = (x2_a - x1_a)*(y2_a - y1_a)
+    area_b = (x2_b - x1_b)*(y2_b - y1_b)
+
+    overlap_ratio = overlap_area / np.minimum(area_a, area_b)
+    return overlap_ratio
+
 
 # Function to creating video records of object (beyblades) tracking
 def making_scatter_tracking(track_history, tracking_enabled, height, width, out_beyblade1, out_beyblade2):
@@ -228,12 +248,12 @@ while cap.isOpened():
                         
                         # Condition for 2 beyblades
                         if custom_track_id == 1:
-                            beyblade1_cropped,beyblade1_array_this_fps,beyblade1_pos,beyblade1_conf = beyblade_array(frame,x1,x2,y1,y2,conf)
-                            beyblade1_id = custom_track_id
+                            beyblade1_cropped,beyblade1_array_this_fps,beyblade1_pos,beyblade1_conf, beyblade1_bbox = beyblade_array_info(frame,x1,x2,y1,y2,conf)
+                            beyblade1_id = custom_track_id 
                         elif custom_track_id == 2:
-                            beyblade2_cropped,beyblade2_array_this_fps,beyblade2_pos,beyblade2_conf = beyblade_array(frame,x1,x2,y1,y2,conf)
+                            beyblade2_cropped,beyblade2_array_this_fps,beyblade2_pos,beyblade2_conf, beyblade2_bbox = beyblade_array_info(frame,x1,x2,y1,y2,conf)
                             beyblade2_id = custom_track_id
-
+                        
                         # Get the color for the bounding box
                         bbox_color = get_color_for_id(custom_track_id)
                         label = f"Beyblade-{custom_track_id}, conf: {conf:.2f}"
@@ -303,17 +323,31 @@ while cap.isOpened():
             # Store the positions of the two Beyblades, the timeframe, and the timestamp
             timeframe = frame_counter / fps  # Calculate the current time
 
+            # Detection of overlap or collision incident
+            overlap_ratio = calculate_collision(beyblade1_bbox,beyblade2_bbox,threshold_arena)
+            if overlap_ratio >= threshold_arena:
+                status_collision = "Collision"
+                collision_count += 1
+            else:
+                status_collision = "No Collision"
+
             # Store the data into table (CSV)
             df1_columns_value = [
                 beyblade1_pos[0], beyblade1_pos[1], mean_diff_beyblade1, beyblade1_pos_diff, beyblade1_conf,
                 beyblade2_pos[0], beyblade2_pos[1], mean_diff_beyblade2, beyblade2_pos_diff, beyblade2_conf,
-                timeframe, timestamp]
+                timeframe, timestamp, status_collision, int(collision_count)]
             df1.loc[len(df1)] = df1_columns_value
             df1.to_csv('./output/beyblade-tracking-analyzed.csv', index=False) 
 
             # Assuming beyblade1_conf and beyblade2_conf can be None
-            beyblade1_conf_value = beyblade1_conf if beyblade1_conf is not None else 0.0
-            beyblade2_conf_value = beyblade2_conf if beyblade2_conf is not None else 0.0
+            if beyblade1_conf is not None:
+                beyblade1_conf_value = beyblade1_conf
+            else:
+                beyblade1_conf_value = 0.0
+            if beyblade2_conf is not None:
+                beyblade2_conf_value = beyblade2_conf
+            else:
+                beyblade2_conf_value = 0.0
 
             # Print the positions, position differences, and timestamp to the console
             print("")
@@ -321,10 +355,10 @@ while cap.isOpened():
                 differencetimestamp = 0
             else:
                 differencetimestamp = round(timestamp,2) - round(previous_timestamp,2)
-            print(f"timeframe: {timeframe:.2f} s, timestamp: {timestamp:.2f} s, Difference timestamp: {differencetimestamp} s") 
+            print(f"timeframe: {timeframe:.2f} s, timestamp: {timestamp:.2f} s, Difference timestamp: {differencetimestamp:.2f} s") 
             printbeyblade(1,beyblade1_pos,beyblade1_conf_value,beyblade1_pos_diff,mean_diff_beyblade1)
             printbeyblade(2,beyblade2_pos,beyblade2_conf_value,beyblade2_pos_diff,mean_diff_beyblade2)
-            
+            print(f"Status collision : {status_collision}")
 
             if beyblade1_cropped is not None and beyblade2_cropped is not None:
                 print("")
@@ -333,7 +367,7 @@ while cap.isOpened():
                     winning1_enabled = True
                     cv2.imwrite('./output/beybladewin-1.jpg', beyblade1_cropped)
                     cv2.imwrite('./output/beybladelose-2.jpg', beyblade2_cropped)
-                    df2_columns_value = [int(1), int(2), round(timestamp,2)]              # Integrate data result to table (CSV)
+                    df2_columns_value = [int(1), int(2), round(timestamp,2), int(collision_count)]              # Integrate data result to table (CSV)
                     df2.loc[len(df2)] = df2_columns_value                       
                     beyblade1_win_count = 0 
                                                                                 # Reset count after declaring a winner
@@ -342,7 +376,7 @@ while cap.isOpened():
                     winning2_enabled = True
                     cv2.imwrite('./output/beybladewin-2.jpg', beyblade2_cropped)
                     cv2.imwrite('./output/beybladelose-1.jpg', beyblade1_cropped)
-                    df2_columns_value = [int(2), int(1), round(timestamp,2)]
+                    df2_columns_value = [int(2), int(1), round(timestamp,2), int(collision_count)]
                     df2.loc[len(df2)] = df2_columns_value
                     beyblade2_win_count = 0  
 
@@ -376,6 +410,7 @@ while cap.isOpened():
         # After exiting the loop, release resources and output the duration
         if winning1_enabled or winning2_enabled:
             print(f"Total duration of the battle {timestamp:.2f} s")
+            print(f"Total collision during the battle: {int(collision_count)}")
             print("")
             df2.to_csv('./output/beyblade_battle_result.csv', index=False)
 
