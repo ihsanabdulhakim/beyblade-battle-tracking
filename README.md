@@ -98,7 +98,7 @@ This method is to calculate distance (difference) between two points for two dim
   <br>
 </p>
 
-This x_c and y_c will be defined as **beyblade_pos**, After that, we assign this value to be the **beyblade_pos_before**, initially set to None. **beyblade_pos_before** will be used as a factor to subtract from the current center coordinates (**beyblade_pos**) of the beyblade obtained in the new frame by euclide distance calculation. The difference distance name as **beyblade_pos_diff** is the parameter whether the remain beyblades is slightly change position or not by the boundary of threshold value **1.0**. Whoever reach out the difference value under this threshold will be assuming as **Not changing position**.
+This x_c and y_c will be defined as **beyblade_pos**, After that, we assign this value to be the **beyblade_pos_before**, initially set to None. **beyblade_pos_before** will be used as a factor to subtract from the current center coordinates (**beyblade_pos**) of the beyblade obtained in the new frame by euclide distance calculation. The difference distance name as **beyblade_pos_diff** is the parameter whether the remain beyblades is slightly change position or not by the boundary of threshold value **1.0**. Whoever reach out the difference value under this threshold will be assuming as **not changing position**.
 
 ❐ Image Array Substraction
 
@@ -129,12 +129,17 @@ This calculation determines the width of the overlap along the x-axis. If the re
 
 ## Database Analysis
 The program also provide the creating data storage of CSV and .db. There are 2 tables that created during running the program:
-1. beyblade-tracking-analyzed.csv
+
+**1. beyblade-tracking-analyzed.csv**
+
    In this dataframe, the program save the real-time captured data during the battle of beyblades (happening after the second beyblades being detected by the model detection). It saves 14 data field (columns) which include the first five is beyblade 1 properties, the second five is beyblade 2 properties, timeframe, timestamps, status_collision, and collision_count.
    The timeframe itself is the timefreeze of each saved detected beyblade frame which take in full duration of the video (For example; the battle start on 7 seconds after the video begin, then the timestamps will be record from 07 seconds). Meanwhile timestamps is the duration of timefreeze beyblade detected on the time after the battle begin. The data integration work simultaneously until the winning condition or breaking loop condition.
-2. beyblade_battle_result.csv
+   
+**2. beyblade_battle_result.csv**
+   
    In this dataframe, only 1 record will be conceived. It will stored after the winning condition is occured. The field of this dataframe are 4 fields; 'Beyblade ID that win', 'Beyblade ID that lose', 'Duration battle', 'Collision count'.
-   After both of dataframes is created, the program will create database (.db) using SQLite scripts with filenames 'beybladebattletracking.db'.
+
+After both of dataframes is created, the program will create database (.db) using SQLite scripts with filenames **beybladebattletracking.db**.
 
 ## Handling Problems
 Since the model achieved a precision below 0.90 for class '0' (Beyblades), there are instances where beyblade detection may temporarily disappear. To address this issue, I developed an algorithm that stores the last known position of a beyblade in track_history whenever the detection is temporarily lost (due to occlusions or false positives).
