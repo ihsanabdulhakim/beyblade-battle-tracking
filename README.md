@@ -137,7 +137,7 @@ The program also provide the creating data storage of CSV and .db. There are 2 t
    
 **2. beyblade_battle_result.csv**
    
-   In this dataframe, only 1 record will be conceived. It will stored after the winning condition is occured. The field of this dataframe are 4 fields; 'Beyblade ID that win', 'Beyblade ID that lose', 'Duration battle', 'Collision count'.
+   In this dataframe, only 1 record (row) will be conceived. It will stored after the winning condition is occured. The field of this dataframe are 4 fields; 'Beyblade ID that win', 'Beyblade ID that lose', 'Duration battle', 'Collision count'.
 
 After both of dataframes is created, the program will create database (.db) using SQLite scripts with filenames **beybladebattletracking.db**.
 
