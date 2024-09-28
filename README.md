@@ -1,6 +1,6 @@
 # Beyblade Battle Tracking with YOLOv8 Nano
 ## About
-This project focuses on detecting and tracking two Beyblades in a battle using YOLOv8 Nano. The goal is to determine which Beyblade stops first, marking it as the loser. The system tracks both Beyblades, analyzes their movements, and displays results in real time.
+This project focuses on detecting and tracking two beyblades in a battle using YOLOv8 Nano. The goal is to determine which beyblade stops first, marking it as the loser. The system tracks both beyblades, analyzes their movements, and displays results in real time.
 
 Input and output video access : https://drive.google.com/drive/folders/1O6KV6Sj-dFspW5lh1RYcefnLMRYfBE2c?usp=sharing
 ## Datasets
