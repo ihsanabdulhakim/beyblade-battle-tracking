@@ -1,6 +1,8 @@
 # Beyblade Battle Tracking with YOLOv8 Nano
 ## About
 This project focuses on detecting and tracking two Beyblades in a battle using YOLOv8 Nano. The goal is to determine which Beyblade stops first, marking it as the loser. The system tracks both Beyblades, analyzes their movements, and displays results in real time.
+
+Input and output video access : https://drive.google.com/drive/folders/1O6KV6Sj-dFspW5lh1RYcefnLMRYfBE2c?usp=sharing
 ## Datasets
 The datasets sourced from [Super Beyblade Family's Youtube video](https://www.youtube.com/watch?v=CIfr5618vy4&t=224s) and extracted by manual labelling from [Roboflow Universe](https://universe.roboflow.com/personalihsanworkspace/beyblade-battle-piifc/dataset/2). The datasets is divided into 1080 'train' images (92%) and 90 'valid' images (8%). It has applied preprocessing steps, including Auto-Orient, Resize Stretch to 640x640, an output of 3 training examples, and noise up to 1.21% of pixels to o improve the model’s robustness. The class labels consist of three categories: '0' for beyblade, '1' for hand, and '2' for beyblade launcher in object detection roboflow project.
 
