@@ -28,11 +28,16 @@ You may run the training in notebook python:
 This code are conceived by [Roboflow Blog's template](https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-yolov8-object-detection-on-custom-dataset.ipynb#scrollTo=CjpPg4mGKc1v) for YOLOv8 custom object detection. The result will be saved in **./runs/detect/weights/best.pt**.
 
 ## Setup Configuration
-1. Clone this repository
+**1. Clone this repository**
 ```
 git clone https://github.com/ihsanabdulhakim/beyblade-battle-tracking.git
 ```
-2. Install the required dependencies:
+
+**2. Go to the directory folder**
+```
+cd ./beyblade-battle-tracking
+```
+**3. Install the required dependencies:**
 ```
 pip install -r requirements.txt
 ```
@@ -47,21 +52,21 @@ pip install -r requirements.txt
   * sqlite3
   * time
 
-3. Ensure the following required files exist:
+**4. Ensure the following required files exist:**
 ```
-- ./beyblade-battle-tracking/main.py
-- ./beyblade-battle-tracking/model/best.pt
-- ./beyblade-battle-tracking/input/input.mp4 # You may change the input video name in the folder and in python scripts
+- ./main.py
+- ./model/best.pt
+- ./input/input.mp4 # You may change the input video name in the folder as well in python scripts
 ```
-4. Run the main script:
+**5. Run the main script:**
 ```
-python main.py
+python ./main.py
 ```
 **Note:** This project is compatible with Python 3.9 version.
 
-5. The results will be saved into this address:
+**6. The results will be saved into this address:**
 ```
-- ./beyblade-battle-tracking/output
+- ./output
 ```
 Make sure your terminal supports displaying GUI.
 
