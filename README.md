@@ -27,7 +27,7 @@ You may run the training in notebook python:
 ```
 This code are conceived by [Roboflow Blog's template](https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-yolov8-object-detection-on-custom-dataset.ipynb#scrollTo=CjpPg4mGKc1v) for YOLOv8 custom object detection. The result will be saved in **./runs/detect/weights/best.pt**.
 
-## Setup Configuration
+## Setup and Running the Program
 **1. Clone this repository**
 ```
 git clone https://github.com/ihsanabdulhakim/beyblade-battle-tracking.git
