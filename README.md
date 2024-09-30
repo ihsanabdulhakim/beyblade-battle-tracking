@@ -76,11 +76,11 @@ The usage of the model comes from implementation of **model.track()** function s
 
 ### Display Encounter
 Once the video successfully being read, the program will identify the labels by saved id in the model along with the display status and time counter for video duration playtime each seconds. The program works by step of:
-* **If no object detected by the known stored labels then "Status: //None\\"**
-* **If object detected due to stoded labels then the bounding box of each objects will appear and the display become "Status: Starting"**
-* **If the object that being detected is beyblade, then the display text will including the unique id numbers and confidence each frame**
-* **{The status will be change to "Status: Battle" immediately after the second beyblades is detected. In this time, the battle duration will begin time counting each seconds**
-* **The status will be change to "Status: End, Beyblade //id\\ is the winner!" after the winning statement being enabled**
+* If no object detected by the known stored labels then **"Status: {None}"**
+* If object detected due to stoded labels then the bounding box of each objects will appear and the display become **"Status: Starting"**
+* If the object that being detected is beyblade, then the display text will including the unique id numbers and confidence each frame
+* The status will be change to **"Status: Battle"** immediately after the second beyblades is detected. In this time, the battle duration will begin time counting each seconds
+* The status will be change to **"Status: End, Beyblade {id} is the winner!"** after the winning statement being enabled
 ![display-beyblade](./image/display-beyblade.png)
 ## Winning Parameter
 The criterion for determining the winner in a Beyblade battle is based on the duration of the beyblade's spin. Therefore, the parameter used in this algorithm is identifying the beyblade that stops spinning first, which is declared as the losing beyblade. Here i used two steps approaches:
