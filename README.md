@@ -90,7 +90,7 @@ Once the video successfully being read, the program will identify the labels by 
 ## Winning Parameter
 The criterion for determining the winner in a Beyblade battle is based on the duration of the beyblade's spin. Therefore, the parameter used in this algorithm is identifying the beyblade that stops spinning first, which is declared as the losing beyblade. Here i used two steps approaches:
 
-❐ Euclidean Distance
+❐ **Euclidean Distance**
 <p align="center">
   <img src="https://github.com/user-attachments/assets/181f02a0-f5fc-401d-93c2-36ac39ce7f47">
   <br>
@@ -104,8 +104,12 @@ This method is to calculate distance (difference) between two points for two dim
 </p>
 
 This x_c and y_c will be defined as **beyblade_pos**, After that, we assign this value to be the **beyblade_pos_before**, initially set to None. **beyblade_pos_before** will be used as a factor to subtract from the current center coordinates (**beyblade_pos**) of the beyblade obtained in the new frame by euclide distance calculation. The difference distance name as **beyblade_pos_diff** is the parameter whether the remain beyblades is slightly change position or not by the boundary of threshold value **1.0**. Whoever reach out the difference value under this threshold will be assuming as **not changing position**.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f9432d32-6564-4c6e-a2aa-3023e9608200">
+  <br>
+</p>
 
-❐ Image Array Substraction
+❐ **Image Array Difference**
 
 Another approaches that will define the winning benchmarks is by the face of the object. Since the image of beyblades during spin and stop is very different, we can use this strategies to reach our main goal for getting the losing beyblades.
 
