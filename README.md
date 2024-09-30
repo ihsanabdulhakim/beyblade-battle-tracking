@@ -134,7 +134,10 @@ The beyblades tracking is an additional function to gain the visualization proce
 ## Collision Count
 Collisions between the beyblades are detected by calculating the overlap between their bounding boxes. If the overlap ratio exceeds a defined threshold, it is counted as a collision. The number of collisions is tracked throughout the battle. To achieve this, we extracted the beyblade bounding box coordinates; x1, y1, x2, y2. 
 
-![image](https://github.com/user-attachments/assets/b061d377-89cd-4fea-93dd-af9cd0864a72)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b061d377-89cd-4fea-93dd-af9cd0864a72">
+  <br>
+</p>
 
 This calculation determines the width of the overlap along the x-axis. If the result is negative, it indicates no overlap (thats why only 0 value to received there is no collision). Likewise for overlap along the y-axis is inidcator of collision of heights. The ratio overlap as approach 100% or 1 means that the overlap_area is as same as the area of bounding box (which is impossible since the together encouter just creating collision) so I pick threshold value **0.03** or 3% of **overlap_ratio** considered to collide.
 
