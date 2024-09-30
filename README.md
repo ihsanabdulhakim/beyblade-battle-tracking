@@ -37,9 +37,17 @@ git clone https://github.com/ihsanabdulhakim/beyblade-battle-tracking.git
 ```
 cd ./beyblade-battle-tracking
 ```
-**3. Install the required dependencies:**
+
+**3. Ensure the following required files exist:**
 ```
-pip install -r requirements.txt
+- ./main.py
+- ./model/best.pt
+- ./requirements.txt
+- ./input/input.mp4 # You may change the input video name in the folder as well in python scripts
+```
+**4. Install the required dependencies:**
+```
+pip install -r ./requirements.txt
 ```
   The python program requires the following libraries:
   * ultralytics
@@ -51,13 +59,7 @@ pip install -r requirements.txt
   * pandas
   * sqlite3
   * time
-
-**4. Ensure the following required files exist:**
-```
-- ./main.py
-- ./model/best.pt
-- ./input/input.mp4 # You may change the input video name in the folder as well in python scripts
-```
+    
 **5. Run the main script:**
 ```
 python ./main.py
@@ -68,7 +70,7 @@ python ./main.py
 ```
 - ./output
 ```
-Make sure your terminal supports displaying GUI.
+Make sure your terminal supports to displaying GUI.
 
 ## Beyblade Battle Tracking Algorithm
 The idea of this base program was convolutional neural network for object detection and YOLO object tracking system. The program will read the input file and initialized the necessary variables as 0 (None) or 'False' statements.  
